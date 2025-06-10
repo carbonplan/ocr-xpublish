@@ -10,6 +10,7 @@ def get_ds():
         bucket="carbonplan-ocr",
         prefix="input/fire-risk/tensor/USFS/RDS-2022-0016-02_EPSG_4326_icechunk_all_vars",
         region="us-west-2",
+        anonymous=True,
     )
     repo = icechunk.Repository.open_or_create(storage)
     session = repo.readonly_session("main")
