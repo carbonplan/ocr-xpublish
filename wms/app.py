@@ -1,7 +1,10 @@
+import os
+os.environ['NUMBA_DISABLE_JIT'] = '1' # fixes threading errors
+
 import xpublish
 from xpublish_wms import CfWmsPlugin
 import xarray as xr
-
+from fastapi.middleware.cors import CORSMiddleware
 
 def get_ds():
     import icechunk
@@ -23,8 +26,14 @@ def get_ds():
         longitude=slice(seattle_nb_bbox[0], seattle_nb_bbox[2]),
     )
 
-
 def xpublish_app():
     ds = get_ds()
     rest = xpublish.Rest({"risk": ds}, plugins={"wms": CfWmsPlugin()})
+
+    # allow cors
+    rest.app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+    )
+
     return rest
