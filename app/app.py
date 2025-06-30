@@ -17,7 +17,7 @@ def apply_time_horizon(ds: xr.Dataset, var: str) -> xr.Dataset:
 
 def get_ds(branch: str):
     import icechunk
-
+    import xarray as xr 
     storage = icechunk.s3_storage(
         bucket="carbonplan-ocr",
         prefix=f"intermediate/fire-risk/tensor/{branch}/template.icechunk",
