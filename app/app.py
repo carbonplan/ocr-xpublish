@@ -40,10 +40,10 @@ def xpublish_app():
         cache_kws=dict(available_bytes=1e9),
     )
 
-    # allow cors for carbonplan.org and localhost only
+    # allow cors for carbonplan.org, localhost, and vercel
     rest.app.add_middleware(
         CORSMiddleware,
-        allow_origin_regex=r"https?://(.*\.)?carbonplan\.org|http://(localhost|127\.0\.0\.1)(:\d+)?",
+        allow_origin_regex=r"https?://(.*\.)?carbonplan\.org|http://(localhost|127\.0\.0\.1)(:\d+)?|https://.*\.vercel\.app",
     )
 
     return rest
