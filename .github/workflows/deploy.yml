@@ -20,6 +20,8 @@ permissions:
 
 env:
   AWS_DEFAULT_REGION: us-west-2
+  ECR_REPOSITORY: ocr
+  LAMBDA_FUNCTION_NAME: ocr-custom
 
 jobs:
   etl:
@@ -57,3 +59,11 @@ jobs:
           IMAGE_TAG=latest
           AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Update Lambda function
+        run: |
+          IMAGE_TAG=latest
+          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          aws lambda update-function-code \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --image-uri $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
