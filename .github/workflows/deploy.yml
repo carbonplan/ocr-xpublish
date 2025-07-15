@@ -81,5 +81,5 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name $LAMBDA_FUNCTION_NAME \
-            --environment "Variables={LOGFIRE_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }}}" \
-            --environment "Variables={LOGFIRE_PYDANTIC_PLUGIN_RECORD=all}"
+            --environment "Variables={LOGFIRE_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }},LOGFIRE_PYDANTIC_PLUGIN_RECORD=all}"
+            
