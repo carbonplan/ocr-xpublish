@@ -7,7 +7,7 @@
         "xarray>=2025.6.1",
         "xpublish-wms",
         "xpublish>=0.4.1",
-    ]
+]
     description = "Add your description here"
     name = "exapp"
     readme = "README.md"
@@ -15,7 +15,7 @@
     version = "0.1.0"
 
 [tool.uv.sources]
-    xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms", branch = "add-instrumentation-via-logfire" }
+xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms", branch = "add-instrumentation-via-logfire" }
 
 [tool.logfire]
     pydantic_plugin_record = "all"

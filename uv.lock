@@ -350,7 +350,7 @@ requires-dist = [
     { name = "mangum", specifier = ">=0.19.0" },
     { name = "xarray", specifier = ">=2025.6.1" },
     { name = "xpublish", specifier = ">=0.4.1" },
-    { name = "xpublish-wms", git = "https://github.com/carbonplan/xpublish-wms" },
+    { name = "xpublish-wms", git = "https://github.com/carbonplan/xpublish-wms?branch=add-instrumentation-via-logfire" },
 ]
 
 [[package]]
@@ -1590,8 +1590,8 @@ wheels = [
 
 [[package]]
 name = "xpublish-wms"
-version = "0.1.dev271+gbc585cc"
-source = { git = "https://github.com/carbonplan/xpublish-wms#bc585cc79f258978e8e8b55a41399539388bb234" }
+version = "0.1.dev272+gf6629f3"
+source = { git = "https://github.com/carbonplan/xpublish-wms?branch=add-instrumentation-via-logfire#f6629f3691edbeed1f5d946a9134f12e531003b2" }
 dependencies = [
     { name = "cachey" },
     { name = "cartopy" },
