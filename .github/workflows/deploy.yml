@@ -81,4 +81,4 @@ jobs:
         run: |
           aws lambda update-function-configuration \
             --function-name $LAMBDA_FUNCTION_NAME \
-            --environment "Variables={LOGFIRE_PROJECT_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }}}"
+            --environment "Variables={LOGFIRE_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }}}"
