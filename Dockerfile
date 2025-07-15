@@ -5,7 +5,7 @@ FROM ghcr.io/astral-sh/uv:0.7.15 AS uv
 FROM python:3.13-slim AS builder
 
 # some of the libs require gcc
-RUN apt-get update && apt-get install -y gcc g++ make && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y gcc g++ make git && rm -rf /var/lib/apt/lists/*
 
 # Set Lambda environment variables
 ENV LAMBDA_TASK_ROOT=/var/task
