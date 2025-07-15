@@ -9,12 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from xpublish_wms import CfWmsPlugin
 
 
-class LoggingWmsPlugin(CfWmsPlugin):
-    async def get_wms(self, *args, **kwargs):
-        logfire.info("WMS endpoint called", extra={"args": args, "kwargs": kwargs})
-        return await super().get_wms(*args, **kwargs)
-
-
 def apply_time_horizon(ds: xr.Dataset, var: str) -> xr.Dataset:
     ds[f"{var}_horizon_1"] = ds[var] * 100.0
     ds[f"{var}_horizon_15"] = (1 - (1 - ds[var]) ** 15) * 100
@@ -73,7 +67,7 @@ def xpublish_app():
 
     rest = xpublish.Rest(
         {"prod": get_ds(branch="prod"), "QA": get_ds(branch="QA")},
-        plugins={"wms": LoggingWmsPlugin()},
+        plugins={"wms": CfWmsPlugin()},
         cache_kws=dict(available_bytes=1e9),
     )
 
