@@ -1,0 +1,67 @@
+name: Deploy to AWS Lambda
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  id-token: write # This is required for requesting the JWT
+  contents: read # This is required for actions/checkout
+
+env:
+  AWS_DEFAULT_REGION: us-west-2
+  ECR_REPOSITORY: ocr
+  LAMBDA_FUNCTION_NAME: ocr-custom
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam:::${{ secrets.AWS_ACCOUNT_ID }}:role/github-action-role
+          role-session-name: ocr-xpublish-role-session
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build --provenance=false --platform linux/amd64 -t $ECR_REPOSITORY .
+
+      - name: Tag Docker image
+        run: |
+          IMAGE_TAG=latest
+          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Push Docker image to ECR
+        run: |
+          IMAGE_TAG=latest
+          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Update Lambda function
+        run: |
+          IMAGE_TAG=latest
+          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+          aws lambda update-function-code \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --image-uri $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
