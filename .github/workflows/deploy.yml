@@ -34,7 +34,7 @@ jobs:
       - name: configure aws credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam:::${{ secrets.AWS_ACCOUNT_ID }}:role/github-action-role
+          role-to-assume: arn:aws:iam::631969445205:role/github-action-role
           role-session-name: ocr-xpublish-role-session
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
@@ -49,19 +49,36 @@ jobs:
       - name: Tag Docker image
         run: |
           IMAGE_TAG=latest
-          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG 631969445205.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Push Docker image to ECR
         run: |
           IMAGE_TAG=latest
-          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+
+          docker push 631969445205.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Update Lambda function
         run: |
           IMAGE_TAG=latest
-          AWS_ACCOUNT_ID=${{ secrets.AWS_ACCOUNT_ID }}
+
           aws lambda update-function-code \
             --function-name $LAMBDA_FUNCTION_NAME \
-            --image-uri $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+            --image-uri 631969445205.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Wait for Lambda update to finish
+        run: |
+          for i in {1..30}; do
+            STATUS=$(aws lambda get-function-configuration --function-name $LAMBDA_FUNCTION_NAME --query 'LastUpdateStatus' --output text)
+            if [ "$STATUS" = "Successful" ]; then
+              break
+            fi
+            echo "Waiting for Lambda update to finish... ($STATUS)"
+            sleep 5
+          done
+
+      - name: Set LOGFIRE_PROJECT_TOKEN environment variable
+        run: |
+          aws lambda update-function-configuration \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --environment "Variables={LOGFIRE_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }}}"
