@@ -64,6 +64,7 @@ def xpublish_app():
     logfire.info("Starting xpublish app...")
     logfire.instrument_requests()
     logfire.instrument_system_metrics()
+    logfire.instrument_pydantic()
 
     rest = xpublish.Rest(
         {"prod": get_ds(branch="prod"), "QA": get_ds(branch="QA")},

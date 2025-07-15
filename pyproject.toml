@@ -1,18 +1,21 @@
 [project]
-name = "exapp"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
-dependencies = [
-    "dask>=2025.5.1",
-    "icechunk>=0.2.17",
-    "logfire[aws-lambda,fastapi,httpx,requests,system-metrics]>=3.24.2",
-    "mangum>=0.19.0",
-    "xarray>=2025.6.1",
-    "xpublish>=0.4.1",
-    "xpublish-wms",
-]
+    dependencies = [
+        "dask>=2025.5.1",
+        "icechunk>=0.2.17",
+        "logfire[aws-lambda,fastapi,httpx,requests,system-metrics]>=3.24.2",
+        "mangum>=0.19.0",
+        "xarray>=2025.6.1",
+        "xpublish-wms",
+        "xpublish>=0.4.1",
+    ]
+    description = "Add your description here"
+    name = "exapp"
+    readme = "README.md"
+    requires-python = ">=3.13"
+    version = "0.1.0"
 
 [tool.uv.sources]
-xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms" }
+    xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms" }
+
+[tool.logfire]
+    pydantic_plugin_record = "all"
