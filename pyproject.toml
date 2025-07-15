@@ -15,7 +15,7 @@
     version = "0.1.0"
 
 [tool.uv.sources]
-    xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms" }
+    xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms", branch = "add-instrumentation-via-logfire" }
 
 [tool.logfire]
     pydantic_plugin_record = "all"
