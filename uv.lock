@@ -350,7 +350,7 @@ requires-dist = [
     { name = "mangum", specifier = ">=0.19.0" },
     { name = "xarray", specifier = ">=2025.6.1" },
     { name = "xpublish", specifier = ">=0.4.1" },
-    { name = "xpublish-wms", git = "https://github.com/carbonplan/xpublish-wms" },
+    { name = "xpublish-wms", git = "https://github.com/carbonplan/xpublish-wms?rev=d3cd61d" },
 ]
 
 [[package]]
@@ -1590,8 +1590,8 @@ wheels = [
 
 [[package]]
 name = "xpublish-wms"
-version = "0.1.dev271+gbc585cc"
-source = { git = "https://github.com/carbonplan/xpublish-wms#bc585cc79f258978e8e8b55a41399539388bb234" }
+version = "0.1.dev275+gd3cd61d"
+source = { git = "https://github.com/carbonplan/xpublish-wms?rev=d3cd61d#d3cd61d1d28d3b0826c475d1e659a1a03833785a" }
 dependencies = [
     { name = "cachey" },
     { name = "cartopy" },
