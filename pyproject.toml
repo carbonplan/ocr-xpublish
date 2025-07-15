@@ -15,7 +15,7 @@
     version = "0.1.0"
 
 [tool.uv.sources]
-xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms", rev = "18b67a0" }
+xpublish-wms = { git = "https://github.com/carbonplan/xpublish-wms", rev = "d3cd61d" }
 
 [tool.logfire]
     pydantic_plugin_record = "all"
