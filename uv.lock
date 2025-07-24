@@ -1590,8 +1590,8 @@ wheels = [
 
 [[package]]
 name = "xpublish-wms"
-version = "0.1.dev271+gbc585cc"
-source = { git = "https://github.com/carbonplan/xpublish-wms#bc585cc79f258978e8e8b55a41399539388bb234" }
+version = "0.1.dev273+g6b53468"
+source = { git = "https://github.com/carbonplan/xpublish-wms#6b53468b182f11628c5c5b3581fb652c4837a188" }
 dependencies = [
     { name = "cachey" },
     { name = "cartopy" },
