@@ -24,7 +24,7 @@ def get_ds(branch: str):
         with logfire.span("opening icechunk repository"):
             storage = icechunk.s3_storage(
                 bucket="carbonplan-ocr",
-                prefix=f"intermediate/fire-risk/tensor/{branch}/template.icechunk",
+                prefix=f"output/fire-risk/tensor/{branch}/template.icechunk",
                 region="us-west-2",
                 anonymous=True,
             )
