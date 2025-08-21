@@ -77,8 +77,8 @@ jobs:
             sleep 5
           done
 
-      # - name: Set LOGFIRE_PROJECT_TOKEN environment variable
-      #   run: |
-      #     aws lambda update-function-configuration \
-      #       --function-name $LAMBDA_FUNCTION_NAME \
-      #       --environment "Variables={LOGFIRE_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }}}"
+      - name: Set LOGFIRE_PROJECT_TOKEN environment variable
+        run: |
+          aws lambda update-function-configuration \
+            --function-name $LAMBDA_FUNCTION_NAME \
+            --environment "Variables={LOGFIRE_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }}}"
