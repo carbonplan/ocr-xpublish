@@ -10,9 +10,9 @@ from xpublish_wms import CfWmsPlugin
 
 
 def apply_time_horizon(ds: xr.Dataset, var: str) -> xr.Dataset:
-    ds[f"{var}_horizon_1"] = ds[var] * 100
-    ds[f"{var}_horizon_15"] = (1 - (1 - ds[var]) ** 15) * 100
-    ds[f"{var}_horizon_30"] = (1 - (1 - ds[var]) ** 30) * 100
+    ds[f"{var}_horizon_1"] = ds[var]
+    ds[f"{var}_horizon_15"] = (1 - (1 - (ds[var] / 100.0)) ** 15) * 100
+    ds[f"{var}_horizon_30"] = (1 - (1 - (ds[var] / 100.0)) ** 30) * 100
     return ds
 
 
