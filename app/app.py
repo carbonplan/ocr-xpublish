@@ -10,9 +10,29 @@ from xpublish_wms import CfWmsPlugin
 
 
 def apply_time_horizon(ds: xr.Dataset, var: str) -> xr.Dataset:
-    ds[f"{var}_horizon_1"] = ds[var] * 100.0
-    ds[f"{var}_horizon_15"] = (1 - (1 - ds[var]) ** 15) * 100
-    ds[f"{var}_horizon_30"] = (1 - (1 - ds[var]) ** 30) * 100
+    ds[f"{var}_horizon_1"] = ds[var]
+    ds[f"{var}_horizon_15"] = (1 - (1 - (ds[var] / 100.0)) ** 15) * 100
+    ds[f"{var}_horizon_30"] = (1 - (1 - (ds[var] / 100.0)) ** 30) * 100
+    return ds
+
+
+def get_rps_ds():
+    import icechunk
+    import xarray as xr
+
+    storage = icechunk.s3_storage(
+        bucket="carbonplan-ocr",
+        prefix="input/fire-risk/tensor/USFS/RDS-2022-0016-02_EPSG_4326_icechunk_all_vars",
+        region="us-west-2",
+        anonymous=True,
+    )
+    repo = icechunk.Repository.open(storage)
+    session = repo.readonly_session("main")
+    ds = xr.open_zarr(session.store, consolidated=False)[["RPS"]]
+    for var in list(ds):
+        logfire.info(f"Applying time horizon to variable: {var}")
+        ds = apply_time_horizon(ds, var)
+
     return ds
 
 
@@ -28,7 +48,7 @@ def get_ds(branch: str):
                 region="us-west-2",
                 anonymous=True,
             )
-            repo = icechunk.Repository.open_or_create(storage)
+            repo = icechunk.Repository.open(storage)
             session = repo.readonly_session("main")
 
             with logfire.span("opening xarray dataset from icechunk repository"):
@@ -39,7 +59,7 @@ def get_ds(branch: str):
                         logfire.info(f"Applying time horizon to variable: {var}")
                         ds = apply_time_horizon(ds, var)
 
-                    return ds
+                return ds
 
 
 def request_attributes_mapper(request, attributes):
@@ -66,7 +86,7 @@ def xpublish_app():
     logfire.instrument_system_metrics()
 
     rest = xpublish.Rest(
-        {"prod": get_ds(branch="prod"), "QA": get_ds(branch="QA")},
+        {"prod": get_ds(branch="prod"), "QA": get_ds(branch="QA"), "RPS": get_rps_ds()},
         plugins={"wms": CfWmsPlugin()},
         cache_kws=dict(available_bytes=1e9),
     )

@@ -9,7 +9,7 @@
    or in a python session:
 
 ```python
-from wms.app import xpublish_app
+from app.app import xpublish_app
 rest = xpublish_app()
 rest.serve()
 ```
@@ -17,8 +17,8 @@ rest.serve()
 ### Instrumentation via Logfire
 
 ```bash
-uv add 'logfire[fastapi]' 
+uv add 'logfire[fastapi]'
 uv run logfire auth
-uv run logfire projects new ocr --org carbonplan 
+uv run logfire projects new ocr --org carbonplan
 uv run logfire projects use ocr --org carbonplan
 ```
