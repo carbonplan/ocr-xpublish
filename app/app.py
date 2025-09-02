@@ -88,9 +88,9 @@ def xpublish_app():
     rest = xpublish.Rest(
         {
             "qa": get_ds(branch="qa"),
+            "QA": get_ds(branch="QA"),
             "staging": get_ds(branch="staging"),
             "prod": get_ds(branch="prod"),
-            "production": get_ds(branch="production"),
             "RPS": get_rps_ds(),
         },
         plugins={"wms": CfWmsPlugin()},
