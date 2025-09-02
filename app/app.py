@@ -86,7 +86,13 @@ def xpublish_app():
     logfire.instrument_system_metrics()
 
     rest = xpublish.Rest(
-        {"prod": get_ds(branch="prod"), "QA": get_ds(branch="QA"), "RPS": get_rps_ds()},
+        {
+            "qa": get_ds(branch="qa"),
+            "staging": get_ds(branch="staging"),
+            "prod": get_ds(branch="prod"),
+            "production": get_ds(branch="production"),
+            "RPS": get_rps_ds(),
+        },
         plugins={"wms": CfWmsPlugin()},
         cache_kws=dict(available_bytes=1e9),
     )
