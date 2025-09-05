@@ -35,16 +35,37 @@ def get_rps_ds():
 
     return ds
 
+def get_old_prod():
+    import icechunk
+    import xarray as xr
 
-def get_ds(branch: str):
+    storage = icechunk.s3_storage(
+        bucket="carbonplan-ocr",
+        prefix=f"output/fire-risk/tensor/prod/template.icechunk",
+        region="us-west-2",
+        anonymous=True,
+    )
+    repo = icechunk.Repository.open(storage)
+    session = repo.readonly_session("main")
+    ds = xr.open_zarr(session.store, consolidated=False)
+    for var in list(ds):
+        ds = apply_time_horizon(ds, var)
+    return ds
+
+            
+def get_ds(branch: str, production_version: str):
     with logfire.span(f"Loading dataset for branch: {branch}"):
         import icechunk
         import xarray as xr
+        if production_version and branch == 'production':
+            prerix = f"output/fire-risk/tensor/{branch}/{production_version}/ocr.icechunk"
+        else:
+            prerix = f"output/fire-risk/tensor/{branch}/ocr.icechunk"
 
         with logfire.span("opening icechunk repository"):
             storage = icechunk.s3_storage(
                 bucket="carbonplan-ocr",
-                prefix=f"output/fire-risk/tensor/{branch}/template.icechunk",
+                prefix=f"output/fire-risk/tensor/{branch}/ocr.icechunk",
                 region="us-west-2",
                 anonymous=True,
             )
@@ -88,9 +109,9 @@ def xpublish_app():
     rest = xpublish.Rest(
         {
             "qa": get_ds(branch="qa"),
-            "QA": get_ds(branch="QA"),
             "staging": get_ds(branch="staging"),
-            "prod": get_ds(branch="prod"),
+            "production": get_ds(branch="production", production_version="v0.1.0"),
+            "prod": get_old_prod(),
             "RPS": get_rps_ds(),
         },
         plugins={"wms": CfWmsPlugin()},
