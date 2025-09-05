@@ -35,13 +35,14 @@ def get_rps_ds():
 
     return ds
 
+
 def get_old_prod():
     import icechunk
     import xarray as xr
 
     storage = icechunk.s3_storage(
         bucket="carbonplan-ocr",
-        prefix=f"output/fire-risk/tensor/prod/template.icechunk",
+        prefix="output/fire-risk/tensor/prod/template.icechunk",
         region="us-west-2",
         anonymous=True,
     )
@@ -52,13 +53,16 @@ def get_old_prod():
         ds = apply_time_horizon(ds, var)
     return ds
 
-            
+
 def get_ds(branch: str, production_version: str):
     with logfire.span(f"Loading dataset for branch: {branch}"):
         import icechunk
         import xarray as xr
-        if production_version and branch == 'production':
-            prerix = f"output/fire-risk/tensor/{branch}/{production_version}/ocr.icechunk"
+
+        if production_version and branch == "production":
+            prerix = (
+                f"output/fire-risk/tensor/{branch}/{production_version}/ocr.icechunk"
+            )
         else:
             prerix = f"output/fire-risk/tensor/{branch}/ocr.icechunk"
 
@@ -110,7 +114,7 @@ def xpublish_app():
         {
             "qa": get_ds(branch="qa"),
             "staging": get_ds(branch="staging"),
-            "production": get_ds(branch="production", production_version="v0.1.0"),
+            # "production": get_ds(branch="production", production_version="v0.1.0"),
             "prod": get_old_prod(),
             "RPS": get_rps_ds(),
         },
