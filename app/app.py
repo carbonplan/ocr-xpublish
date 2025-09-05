@@ -54,22 +54,22 @@ def get_old_prod():
     return ds
 
 
-def get_ds(branch: str, production_version: str):
+def get_ds(branch: str, production_version: str | None = None):
     with logfire.span(f"Loading dataset for branch: {branch}"):
         import icechunk
         import xarray as xr
 
         if production_version and branch == "production":
-            prerix = (
+            prefix = (
                 f"output/fire-risk/tensor/{branch}/{production_version}/ocr.icechunk"
             )
         else:
-            prerix = f"output/fire-risk/tensor/{branch}/ocr.icechunk"
+            prefix = f"output/fire-risk/tensor/{branch}/ocr.icechunk"
 
         with logfire.span("opening icechunk repository"):
             storage = icechunk.s3_storage(
                 bucket="carbonplan-ocr",
-                prefix=f"output/fire-risk/tensor/{branch}/ocr.icechunk",
+                prefix=prefix,
                 region="us-west-2",
                 anonymous=True,
             )
