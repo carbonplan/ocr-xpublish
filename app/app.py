@@ -114,7 +114,7 @@ def xpublish_app():
         {
             "qa": get_ds(branch="qa"),
             "staging": get_ds(branch="staging"),
-            # "production": get_ds(branch="production", production_version="v0.1.0"),
+            "production": get_ds(branch="production", production_version="v0.1.0"),
             "prod": get_old_prod(),
             "RPS": get_rps_ds(),
         },
