@@ -28,22 +28,6 @@ def get_rps_ds():
     return ds
 
 
-def get_old_prod():
-    import icechunk
-    import xarray as xr
-
-    storage = icechunk.s3_storage(
-        bucket="carbonplan-ocr",
-        prefix="output/fire-risk/tensor/prod/template.icechunk",
-        region="us-west-2",
-        anonymous=True,
-    )
-    repo = icechunk.Repository.open(storage)
-    session = repo.readonly_session("main")
-    ds = xr.open_zarr(session.store, consolidated=False)
-    return ds
-
-
 def get_ds(branch: str, production_version: str | None = None):
     with logfire.span(f"Loading dataset for branch: {branch}"):
         import icechunk
@@ -97,7 +81,6 @@ def xpublish_app():
     datasets: dict[str, xr.Dataset] = {
         "qa": get_ds(branch="qa"),
         "staging": get_ds(branch="staging"),
-        "prod": get_old_prod(),
         "RPS": get_rps_ds(),
     }
 
