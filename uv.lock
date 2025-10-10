@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.13"
 
 [[package]]
@@ -1836,8 +1836,8 @@ wheels = [
 
 [[package]]
 name = "xpublish-wms"
-version = "0.1.dev273+g6b53468b1"
-source = { git = "https://github.com/carbonplan/xpublish-wms#6b53468b182f11628c5c5b3581fb652c4837a188" }
+version = "0.1.dev277+g0367a499a"
+source = { git = "https://github.com/carbonplan/xpublish-wms#0367a499adf7c00aee82fb9ac0ea5ac56b5f4563" }
 dependencies = [
     { name = "cachey" },
     { name = "cartopy" },
