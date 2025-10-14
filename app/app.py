@@ -11,13 +11,6 @@ from xpublish_wms import CfWmsPlugin
 from xpublish import hookimpl
 
 
-def apply_time_horizon(ds: xr.Dataset, var: str) -> xr.Dataset:
-    ds[f"{var}_horizon_1"] = ds[var]
-    ds[f"{var}_horizon_15"] = (1 - (1 - (ds[var] / 100.0)) ** 15) * 100
-    ds[f"{var}_horizon_30"] = (1 - (1 - (ds[var] / 100.0)) ** 30) * 100
-    return ds
-
-
 def get_rps_ds():
     import icechunk
     import xarray as xr
@@ -31,28 +24,7 @@ def get_rps_ds():
     repo = icechunk.Repository.open(storage)
     session = repo.readonly_session("main")
     ds = xr.open_zarr(session.store, consolidated=False)[["RPS"]]
-    for var in list(ds):
-        logfire.info(f"Applying time horizon to variable: {var}")
-        ds = apply_time_horizon(ds, var)
 
-    return ds
-
-
-def get_old_prod():
-    import icechunk
-    import xarray as xr
-
-    storage = icechunk.s3_storage(
-        bucket="carbonplan-ocr",
-        prefix="output/fire-risk/tensor/prod/template.icechunk",
-        region="us-west-2",
-        anonymous=True,
-    )
-    repo = icechunk.Repository.open(storage)
-    session = repo.readonly_session("main")
-    ds = xr.open_zarr(session.store, consolidated=False)
-    for var in list(ds):
-        ds = apply_time_horizon(ds, var)
     return ds
 
 
@@ -80,12 +52,6 @@ def get_ds(branch: str, production_version: str | None = None):
 
             with logfire.span("opening xarray dataset from icechunk repository"):
                 ds = xr.open_zarr(session.store, consolidated=False)
-
-                with logfire.span("applying time horizons"):
-                    for var in list(ds):
-                        logfire.info(f"Applying time horizon to variable: {var}")
-                        ds = apply_time_horizon(ds, var)
-
                 return ds
 
 
@@ -115,7 +81,6 @@ def xpublish_app():
     datasets: dict[str, xr.Dataset] = {
         "qa": get_ds(branch="qa"),
         "staging": get_ds(branch="staging"),
-        "prod": get_old_prod(),
         "RPS": get_rps_ds(),
     }
 
