@@ -28,7 +28,8 @@ RUN --mount=from=uv,source=/uv,target=/bin/uv \
 
 FROM public.ecr.aws/lambda/python:3.13
 
-RUN apt-get update && apt-get install -y libexpat1 && rm -rf /var/lib/apt/lists/*
+#????
+RUN dnf install -y libexpat && dnf clean all
 
 # Copy the runtime dependencies from the builder stage.
 COPY --from=builder ${LAMBDA_TASK_ROOT} ${LAMBDA_TASK_ROOT}
