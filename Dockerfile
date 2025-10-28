@@ -29,7 +29,7 @@ RUN --mount=from=uv,source=/uv,target=/bin/uv \
 FROM public.ecr.aws/lambda/python:3.13
 
 #????
-RUN dnf install -y libexpat && dnf clean all
+RUN dnf install -y expat && dnf clean all
 
 # Copy the runtime dependencies from the builder stage.
 COPY --from=builder ${LAMBDA_TASK_ROOT} ${LAMBDA_TASK_ROOT}
