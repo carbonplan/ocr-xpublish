@@ -1,4 +1,3 @@
-import os
 import re
 
 import xarray as xr
@@ -7,14 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from xpublish_tiles.xpublish.tiles import TilesPlugin
 from xpublish import hookimpl
 from odc.geo.xr import assign_crs
-
-os.environ["NUMBA_CACHE_DIR"] = "/tmp"
-os.environ["NUMBA_NUM_THREADS"] = "1"
-os.environ["XPUBLISH_TILES_ASYNC_LOAD"] = "true"
-os.environ["XPUBLISH_TILES_NUM_THREADS"] = "2"
-os.environ["XPUBLISH_TILES_DETECT_APPROX_RECTILINEAR"] = "true"
-
-# os.environ["NUMBA_DISABLE_JIT"] = "1"  # fixes threading errors
 
 
 def get_ds(branch: str, production_version: str | None = None):
