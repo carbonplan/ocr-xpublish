@@ -16,7 +16,8 @@ permissions:
 env:
   AWS_DEFAULT_REGION: us-west-2
   ECR_REPOSITORY: ocr
-  LAMBDA_FUNCTION_NAME: ocr-custom
+  IMAGE_TAG: tiles-latest
+  LAMBDA_FUNCTION_NAME: ocr-xpublish-tiles
 
 jobs:
   deploy:
@@ -35,34 +36,41 @@ jobs:
           role-session-name: ocr-xpublish-role-session
           aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
-      - name: Log in to Amazon ECR
+      - name: login ecr
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
+      - name: build image
         run: |
-          docker build --provenance=false --platform linux/amd64 -t $ECR_REPOSITORY .
+          docker build --provenance=false --platform linux/amd64 -t $ECR_REPOSITORY:$IMAGE_TAG .
 
-      - name: Tag Docker image
+      - name: tag image
         run: |
-          IMAGE_TAG=latest
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG 631969445205.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG 631969445205.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Push Docker image to ECR
+      - name: push image to ECR
         run: |
-          IMAGE_TAG=latest
+          docker push 631969445205.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-          docker push 631969445205.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-
-      - name: Update Lambda function
+      - name: create or update lambda
         run: |
-          IMAGE_TAG=latest
+          IMAGE_URI=631969445205.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
 
-          aws lambda update-function-code \
-            --function-name $LAMBDA_FUNCTION_NAME \
-            --image-uri 631969445205.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-
+          if aws lambda get-function --function-name $LAMBDA_FUNCTION_NAME 2>/dev/null; then
+            echo "updating func"
+            aws lambda update-function-code \
+              --function-name $LAMBDA_FUNCTION_NAME \
+              --image-uri $IMAGE_URI
+          else
+            echo "create new func"
+            aws lambda create-function \
+              --function-name $LAMBDA_FUNCTION_NAME \
+              --package-type Image \
+              --code ImageUri=$IMAGE_URI \
+              --role arn:aws:iam::631969445205:role/ocr \
+              --timeout 60 \
+              --memory-size 2048
+          fi
       - name: Wait for Lambda update to finish
         run: |
           for i in {1..30}; do
@@ -73,9 +81,3 @@ jobs:
             echo "Waiting for Lambda update to finish... ($STATUS)"
             sleep 5
           done
-
-      - name: Set LOGFIRE_PROJECT_TOKEN environment variable
-        run: |
-          aws lambda update-function-configuration \
-            --function-name $LAMBDA_FUNCTION_NAME \
-            --environment "Variables={LOGFIRE_TOKEN=${{ secrets.LOGFIRE_PROJECT_TOKEN }}}"
