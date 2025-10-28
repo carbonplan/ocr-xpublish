@@ -6,7 +6,6 @@ FROM python:3.13-slim AS builder
 
 # some of the libs require gcc
 RUN apt-get update && apt-get install -y gcc g++ make git libexpat1 && rm -rf /var/lib/apt/lists/*
-
 # Set Lambda environment variables
 ENV LAMBDA_TASK_ROOT=/var/task
 ENV LAMBDA_RUNTIME_DIR=/var/runtime
@@ -28,6 +27,8 @@ RUN --mount=from=uv,source=/uv,target=/bin/uv \
     uv pip install -r requirements.txt --target "${LAMBDA_TASK_ROOT}"
 
 FROM public.ecr.aws/lambda/python:3.13
+
+RUN apt-get update && apt-get install -y libexpat1 && rm -rf /var/lib/apt/lists/*
 
 # Copy the runtime dependencies from the builder stage.
 COPY --from=builder ${LAMBDA_TASK_ROOT} ${LAMBDA_TASK_ROOT}
