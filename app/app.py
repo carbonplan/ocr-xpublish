@@ -8,6 +8,7 @@ from xpublish_tiles.xpublish.tiles import TilesPlugin
 from xpublish import hookimpl
 from odc.geo.xr import assign_crs
 
+os.environ["NUMBA_CACHE_DIR"] = "/tmp"
 os.environ["NUMBA_NUM_THREADS"] = "1"
 os.environ["XPUBLISH_TILES_ASYNC_LOAD"] = "true"
 os.environ["XPUBLISH_TILES_NUM_THREADS"] = "2"
